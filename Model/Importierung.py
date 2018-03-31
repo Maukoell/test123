@@ -3,8 +3,11 @@ import csv
 info = []
 error = []
 gap = []
+
 def imp(address):
-    file = open(address, "r")
+    global name
+    name = address
+    file = open((address+".csv"), "r")
     reader = csv.reader(file, delimiter=";")
     return reader
 
@@ -14,7 +17,7 @@ def infos(row, prev):
         info.append(prev[3] + "." + prev[2] + " " + prev[4] + ":" + prev[5] + ":" + prev[6] + "\n" + row[0] + "\n")
 
 def write():
-    with open("info.csv", "w") as infos:
+    with open(str(name)+"_info.csv", "w") as infos:
         wtr = csv.writer(infos)
         wtr.writerow("INFOS")
         for row in info:
@@ -36,7 +39,7 @@ def delfirst(row, wtr):
 
 def main(reader):
     prev = None
-    with open("result.csv", "w") as result:
+    with open(str(name)+"_result.csv", "w") as result:
         wtr1 = csv.writer(result)
         format=findFormat(reader)
         for row in reader:
@@ -99,4 +102,4 @@ def printList(reader):
     for row in reader:
         print(row)
 if __name__ == '__main__':
-    main(imp("F0800305.csv"))
+    main(imp("F0800305"))
