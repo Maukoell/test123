@@ -49,14 +49,41 @@ def main(reader):
     with open(str(name)+"_result.csv", "w") as result:
         wtr1 = csv.writer(result)
         format=findFormat(reader)
+        timegap=findTime(reader)
         for row in reader:
             checkFormat(row, prev, format)
             if(row[0][0] != "#" and prev is not None and firstisdigit(prev)):
-                findgap(row, prev)
+                findgap(row, prev,timegap)
             infos(row, prev)
             delfirst(row, wtr1)
             prev = row
     write()
+
+#erkennung der Zeitabstaende 
+def findTime(reader):
+    time = 0
+    counter = 0
+    rowNumber = 1
+	prev=None
+    for row, i in zip(reader, range(0, 9)):
+		if prev is not None:
+			if rowNumber == 1:
+				if row[0][0] == "#":
+					next(reader)
+			if int(row[6])-int(prev[6]) == time or (row[6]<prev[6] and (int(row[6])+60)-int(prev[6])==time):
+				counter += 1
+				print("+1")
+				rowNumber += 1
+				i += 1
+			else:
+				rowNumber += 1
+				i += 1
+		if counter > 5:
+			print("time gefunden: {}".time(time))
+		else:
+			print("time nicht gefunden")
+
+    return time
 
 #ueberprufung ob das erste Element der Zeile eine Zahl ist
 def firstisdigit(row):
@@ -65,8 +92,8 @@ def firstisdigit(row):
     return False
 
 #ueberprueft ob zwischen der aktuellen und der vorherigen Zeile zu großer zeitlicher unterschied war
-def findgap(row, prev):
-       if int(row[6]) !=(int(prev[6])+1) and int(prev[6]) != 59:
+def findgap(row, prev,timegap):
+       if int(row[6]) !=(int(prev[6])+timegap) and int(prev[6]) != 59:
             gap.append("Lücke von: "+ prev[3] + "." + prev[2] + " " + prev[4] + ":" + prev[5] + ":" + prev[6]+ " bis: "+ row[3] + "." + row[2] + "  " + row[4] + ":" + row[5] + ":" + row[6])
        prev = row
 
