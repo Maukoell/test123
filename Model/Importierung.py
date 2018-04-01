@@ -59,30 +59,33 @@ def main(reader):
             prev = row
     write()
 
-#erkennung der Zeitabstaende 
+#erkennung der Zeitabstaende
 def findTime(reader):
     time = 0
     counter = 0
     rowNumber = 1
-	prev=None
+    prev = None
     for row, i in zip(reader, range(0, 9)):
-		if prev is not None:
-			if rowNumber == 1:
-				if row[0][0] == "#":
-					next(reader)
-			if int(row[6])-int(prev[6]) == time or (row[6]<prev[6] and (int(row[6])+60)-int(prev[6])==time):
-				counter += 1
-				print("+1")
-				rowNumber += 1
-				i += 1
-			else:
-				rowNumber += 1
-				i += 1
-		if counter > 5:
-			print("time gefunden: {}".time(time))
-		else:
-			print("time nicht gefunden")
-
+        if prev is not None:
+            if rowNumber == 1:
+                if row[0][0] != "#" and prev[0][0] != "#":
+                    time = int(row[6])-int(prev[6])
+                else:
+                    next(reader)
+            if int(row[6])-int(prev[6]) == time or (int(row[6])<int(prev[6]) and 60+int(row[6])-int(prev[6])==time):
+                counter += 1
+                print("+1")
+                rowNumber += 1
+                i += 1
+            else:
+                rowNumber += 1
+                i += 1
+        prev=row
+    print(counter)
+    if counter > 5:
+            print("time gefunden: {}".format(time))
+    else:
+            print("time nicht gefunden")
     return time
 
 #ueberprufung ob das erste Element der Zeile eine Zahl ist
