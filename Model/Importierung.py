@@ -142,5 +142,69 @@ def printList(reader):
     for row in reader:
         print(row)
         
-if __name__ == '__main__':
-    main(imp("F0800305"))
+#if __name__ == '__main__':
+#    main(imp("F0800305"))
+
+import tkinter
+from tkinter.filedialog import askopenfilename
+
+#Beenden des main GUI Fensters
+def ende():
+    mainFrame.destroy()
+
+#Beenden aller GUI Fenster
+def endAll():
+    popup.destroy()
+    mainFrame.destroy()
+
+#öffnen des FileChoosers
+def openFileChooser():
+    filename = askopenfilename()
+    tx1.delete(0,len(tx1.get()))
+    tx1.insert(0,filename)
+
+#Vorgang mit Datei durchführen
+def startProgramm():
+    main(imp(tx1.get()))
+    finished()
+
+#Popup nach Fertigstellung
+def finished():
+    global popup
+    popup = tkinter.Tk()
+    popup.wm_title("Vorgang durchgeführt")
+    frame1 = tkinter.Frame(popup)
+    frame1.pack()
+    label = tkinter.Label(frame1,text="Der Vorgang wurde durchgeführt.")
+    label.pack(padx = 10,pady=15);
+    button1 = tkinter.Button(frame1, text="Ok", command=endAll)
+    button1.pack(ipadx=50,padx=5, pady=5,side = "right")
+    popup.mainloop()
+
+#Hauptframe
+mainFrame = tkinter.Tk()
+mainFrame.wm_title("Diplomarbeit")
+
+#Größe bestimmen
+fr0 = tkinter.Frame(mainFrame)
+fr0.pack()
+
+#Pfad Eingabefeld
+fr1 = tkinter.Frame(fr0)
+fr1.pack(expand=1, fill="x")
+lb1 = tkinter.Label(fr1, anchor="n", text="Bitte Dateipfad eingeben oder auswählen:")
+lb1.pack(fill = "x", expand = 1, padx = 10, pady = 10)
+tx1 = tkinter.Entry(fr1, width = 30)
+tx1.pack(fill = "x", expand = 1, padx = 10, pady = 10)
+
+#Button Datei auswählen, Bestätigen, Abbrechen
+fr3 = tkinter.Frame(fr0)
+fr3.pack(expand = 1, fill = "x")
+bt1 = tkinter.Button(fr3, text = "Datei auswählen", width=15 ,command = openFileChooser)
+bt1.pack(padx = 20, pady = 10, side = "left")
+bt2 = tkinter.Button(fr3, text = "Bestätigen", width=15, command= startProgramm)
+bt2.pack(padx = 20, pady = 10, side = "left")
+bt3 = tkinter.Button(fr3, text = "Abbrechen", width=15, command = ende)
+bt3.pack(padx = 20, pady = 10, side = "left")
+
+mainFrame.mainloop()
