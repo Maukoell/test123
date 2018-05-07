@@ -1,58 +1,66 @@
 #import der csv library
 import csv
+import sqlite3
+
+
 
 #globale variablen um die Infozeilen, die fehlerhaften Zeilen und die Luecken zu dokumentieren
 info = []
 error = []
 gap = []
 
+def dbcon():
+    con = sqlite3.connect()
+    c=con.cursor()
+    #Format: YYYY-MM-DD HH:MM:SS
+
 #oeffnen des Files
 def imp(address):
     global name
     name = address
-    file = open((address+".csv"), "r")
+    file = open((address), "r")
     reader = csv.reader(file, delimiter=";")
     return reader
 
 
 #ueberpruefung ob die aktuelle Zeile eine Infozeile ist und wenn ja das abspeichern dieser mit vorhergehenden Uhrzeit
 def infos(row, prev):
-    if row[0][0] == "#" and prev is not None and firstisdigit(prev):
-        info.append(prev[3] + "." + prev[2] + " " + prev[4] + ":" + prev[5] + ":" + prev[6] + "\n" + row[0] + "\n")
+    if len(row)>0 and row[0][0] == "#" and prev is not None and firstisdigit(prev):
+        info.append(prev[3] + "." + prev[2] + " " + prev[4] + ":" + prev[5] + ":" + prev[6] + "\n" + row[0])
 
 #schreibt alle Infozeilen, die fehlerhaften Zeilen und die Luecken in ein Info-File
 def write():
     with open(str(name)+"_info.csv", "w") as infos:
-        wtr = csv.writer(infos)
-        wtr.writerow("INFOS")
+        wtr = csv.writer(infos, delimiter=";")
+        wtr.writerow(["INFOS"])
         for row in info:
-            wtr.writerow(row)
-        wtr.writerow("==============================================================")
-        wtr.writerow("==============================================================")
-        wtr.writerow("GAPS")
+            wtr.writerow([row])
+        wtr.writerow(["=============================================================="])
+        wtr.writerow(["=============================================================="])
+        wtr.writerow(["GAPS"])
         for row in gap:
-            wtr.writerow(row)
-        wtr.writerow("==============================================================")
-        wtr.writerow("==============================================================")
-        wtr.writerow("ERRORS")
+            wtr.writerow([row])
+        wtr.writerow(["=============================================================="])
+        wtr.writerow(["=============================================================="])
+        wtr.writerow(["ERRORS"])
         for row in error:
-            wtr.writerow(row)
+            wtr.writerow([row])
 
 #entfernen der ersten Zahl und abspeichern der Zeile
 def delfirst(row, wtr):
     if firstisdigit(row):
-        wtr.writerow(row[1:])
+        wtr.writerow([row[1:]])
 
 #kompletter Aufruf, um ein file zu bereinigen
 def main(reader):
     prev = None
     with open(str(name)+"_result.csv", "w") as result:
-        wtr1 = csv.writer(result)
+        wtr1 = csv.writer(result, delimiter=";")
         format=findFormat(reader)
         timegap=findTime(reader)
         for row in reader:
             checkFormat(row, prev, format)
-            if(row[0][0] != "#" and prev is not None and firstisdigit(prev)):
+            if(len(row)>0 and row[0][0] != "#" and prev is not None and firstisdigit(prev)):
                 findgap(row, prev,timegap)
             infos(row, prev)
             delfirst(row, wtr1)
@@ -72,43 +80,48 @@ def findTime(reader):
                     time = int(row[6])-int(prev[6])
                 else:
                     next(reader)
-            if int(row[6])-int(prev[6]) == time or (int(row[6])<int(prev[6]) and 60+int(row[6])-int(prev[6])==time):
-                counter += 1
-                print("+1")
-                rowNumber += 1
-                i += 1
+            if firstisdigit(row) and firstisdigit(prev):
+                if  int(row[6])-int(prev[6]) == time or (int(row[6])<int(prev[6]) and 60+int(row[6])-int(prev[6])==time):
+                    counter += 1
+                    rowNumber += 1
+                    i += 1
+                else:
+                    rowNumber += 1
+                    i += 1
             else:
                 rowNumber += 1
                 i += 1
+                counter +=1
         prev=row
-    print(counter)
-    if counter > 5:
-            print("time gefunden: {}".format(time))
-    else:
-            print("time nicht gefunden")
+    if counter < 5:
+            gap.append("zeitabstand nicht gefunden")
+            # Neue GUI geht auf, und der Benutzer wird angehalten den Zeitabstand zwischen zwei Zeilen in Sekunden einzugeben
+            time=None
     return time
 
 #ueberprufung ob das erste Element der Zeile eine Zahl ist
 def firstisdigit(row):
-    if row[0][1].isdigit() and row[0][2].isdigit() and row[0][0] == " ":
+    if len(row)>0 and row[0][1].isdigit() and row[0][2].isdigit() and row[0][0] == " ":
         return True
     return False
 
 #ueberprueft ob zwischen der aktuellen und der vorherigen Zeile zu großer zeitlicher unterschied war
 def findgap(row, prev,timegap):
+    if timegap !=None:
        if int(row[6]) !=(int(prev[6])+timegap) and int(prev[6]) != 59:
             gap.append("Lücke von: "+ prev[3] + "." + prev[2] + " " + prev[4] + ":" + prev[5] + ":" + prev[6]+ " bis: "+ row[3] + "." + row[2] + "  " + row[4] + ":" + row[5] + ":" + row[6])
        prev = row
 
 #ueberpruefen ob das format der Zeile mit dem erkannten format uebereinstimmt
 def checkFormat(row, prev, format):
-        if row[0][0] == "#":
-            prev = row
-        elif len(row) != format:
-            error.append("Format Fehler nach: {}.{}. {}.{}.{}".format(prev[2],prev[3],prev[4],prev[5],prev[6]))
-            prev = row
-        else:
-            prev = row
+        if(format != None):
+            if len(row)>0 and row[0][0] == "#":
+                prev = row
+            elif len(row) != format and prev != None and firstisdigit(prev):
+                error.append("Format Fehler nach: {}.{}. {}.{}.{}".format(prev[2],prev[3],prev[4],prev[5],prev[6]))
+                prev = row
+            else:
+                prev = row
 
 #erkennen des Formats
 def findFormat(reader):
@@ -118,30 +131,26 @@ def findFormat(reader):
 
     for row, i in zip(reader, range(0, 9)):
         if rowNumber == 1:
-            if row[0][0] != "#":
+            if firstisdigit(row):
                 format = len(row)
             else:
                 next(reader)
 
         if len(row) == format:
             counter += 1
-            print("+1")
             rowNumber += 1
             i += 1
         else:
             rowNumber += 1
             i += 1
-    if counter > 5:
-        print("Format gefunden: {}".format(format))
-    else:
-        print("Format nicht gefunden")
+    if counter < 5:
+        error.append("Format nicht gefunden")
+        #Neue GUI geht auf, und der Benutzer wird angehalten das Format einzugeben
+        format=None
 
     return format
 
-def printList(reader):
-    for row in reader:
-        print(row)
-        
+
 #if __name__ == '__main__':
 #    main(imp("F0800305"))
 
