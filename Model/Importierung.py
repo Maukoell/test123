@@ -1,19 +1,19 @@
 # imports
 import csv
-import mysql.connector
-from mysql.connector import Error
-#import sqlite3
-#conn = sqlite3.connect('messdaten.db')
-#c = conn.cursor()
+#import mysql.connector
+#from mysql.connector import Error
+import sqlite3
+conn = sqlite3.connect('messdaten.db')
+c = conn.cursor()
 # globale variablen um die Infozeilen, die fehlerhaften Zeilen und die Luecken zu dokumentieren
 info = []
 error = []
 gap = []
-try:
-    con = mysql.connector.connect(host='localhost', database='messdaten', user='root', password='')
-    cursor = con.cursor()
-except Error as e:
-    print(e)
+#try:
+#    con = mysql.connector.connect(host='localhost', database='messdaten', user='root', password='')
+#    cursor = con.cursor()
+#except Error as e:
+#    print(e)
 
 # oeffnen des Files
 def imp(address):
@@ -59,17 +59,17 @@ def delfirst(row, wtr):
                                                                                                            "0") + ":" +
                 row[5].replace(" ", "0") + ":" + row[6].replace(" ", "0"))
         wtr.writerow([row[1:]])
-        query1= "INSERT IGNORE INTO messgeraet (Geraetenummer, formatierung) VALUES (%s,%s)"
-        args1=(row[1],0)
-        cursor.execute(query1, args1)
-        query2="INSERT IGNORE INTO messwerte (GeraeteNummer, zeit, k1, k2, k3, k4, k5, k6, k7, k8, DIAG ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-        args2=(row[1],zeit,row[7],0,0,0,0,0,0,0,0)
-        cursor.execute(query2, args2)
+        #query1= "INSERT IGNORE INTO messgeraet (Geraetenummer, formatierung) VALUES (%s,%s)"
+        #args1=(row[1],0)
+        #cursor.execute(query1, args1)
+        #query2="INSERT IGNORE INTO messwerte (GeraeteNummer, zeit, k1, k2, k3, k4, k5, k6, k7, k8, DIAG ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        #args2=(row[1],zeit,row[7],0,0,0,0,0,0,0,0)
+        #cursor.execute(query2, args2)
 
-        #try:
-        #    c.execute('INSERT INTO messdaten VALUES (?,?,?,?,?,?,?,?,?,?,?)',row[1],zeit,row[7],0,0,0,0,0,0,0,0)
-        #except sqlite3.IntegrityError:
-        #    print("Error")
+        try:
+            c.execute('INSERT INTO daten VALUES (?,?,?,?,?,?,?,?,?,?,?)',(row[1],zeit,row[7],0,0,0,0,0,0,0,0))
+        except sqlite3.IntegrityError:
+            print("Error")
 
 
 #kompletter Aufruf, um ein file zu bereinigen
@@ -86,9 +86,9 @@ def main(reader):
             infos(row, prev)
             delfirst(row, wtr1)
             prev = row
-    con.commit()
-    cursor.close()
-    con.close()
+    conn.commit()
+    c.close()
+    conn.close()
     write()
 
 
