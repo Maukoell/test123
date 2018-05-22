@@ -10,9 +10,13 @@ from influxdb import InfluxDBClient
 info = []
 error = []
 gap = []
+#JSON Body für die übertragung in die Datenbank
 json=[]
+
+#Verbimndung zur Datenbank
 client = InfluxDBClient(host='localhost', port=8086)
 client.switch_database('messdaten')
+
 #try:
 #    con = mysql.connector.connect(host='localhost', database='messdaten', user='root', password='')
 #    cursor = con.cursor()
