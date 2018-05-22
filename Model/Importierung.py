@@ -1,14 +1,18 @@
 # imports
 import csv
+from influxdb import InfluxDBClient
 #import mysql.connector
 #from mysql.connector import Error
-import sqlite3
-conn = sqlite3.connect('messdaten.db')
-c = conn.cursor()
+#import sqlite3
+#conn = sqlite3.connect('messdaten.db')
+#c = conn.cursor()
 # globale variablen um die Infozeilen, die fehlerhaften Zeilen und die Luecken zu dokumentieren
 info = []
 error = []
 gap = []
+json=[]
+client = InfluxDBClient(host='localhost', port=8086)
+client.switch_database('messdaten')
 #try:
 #    con = mysql.connector.connect(host='localhost', database='messdaten', user='root', password='')
 #    cursor = con.cursor()
@@ -66,10 +70,30 @@ def delfirst(row, wtr):
         #args2=(row[1],zeit,row[7],0,0,0,0,0,0,0,0)
         #cursor.execute(query2, args2)
 
-        try:
-            c.execute('INSERT INTO daten VALUES (?,?,?,?,?,?,?,?,?,?,?)',(row[1],zeit,row[7],0,0,0,0,0,0,0,0))
-        except sqlite3.IntegrityError:
-            print("Error")
+        #try:
+        #    c.execute('INSERT INTO daten VALUES (?,?,?,?,?,?,?,?,?,?,?)',(row[1],zeit,row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15]))
+        #except sqlite3.IntegrityError:
+        #    print("Error")
+        json.append (
+            {
+                "measurement": "messwerte",
+                "tags": {
+                    "GeraeteNummer" :row[1]
+                },
+                "time": zeit,
+                "fields": {
+                    "k1": row[7],
+                    "k2": row[8],
+                    "k3": row[9],
+                    "k4": row[10],
+                    "k5": row[11],
+                    "k6": row[12],
+                    "k7": row[13],
+                    "k8": row[14],
+                    "DIAG": row[15]
+                }
+            },
+        )
 
 
 #kompletter Aufruf, um ein file zu bereinigen
@@ -86,9 +110,12 @@ def main(reader):
             infos(row, prev)
             delfirst(row, wtr1)
             prev = row
-    conn.commit()
-    c.close()
-    conn.close()
+    #conn.commit()
+    #c.close()
+    #conn.close()
+    client.write_points(json)
+    client.close()
+    #print(json)
     write()
 
 
