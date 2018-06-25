@@ -9,31 +9,80 @@ from influxdb import InfluxDBClient
 client = InfluxDBClient(host='localhost', port=8086)
 client.switch_database('messdaten')
 traceList = []
-dataList = []
-rs =list(client.query("SELECT * from messwerte").get_points())
+dataList = {}
+rs =list(client.query("select mean(*) from test where Wochentag=3 and GeraeteNummer=' 80' Group by time(15m)").get_points())
+#Wochentage
+#SELECT MEAN(revenue) FROM revenue_count WHERE time > now() - 7d GROUP BY time(1d)
 set = False
+item=0
 for i in rs:
     l = list(i.values())
     if not set:
-        for j in range(len(l) - 3):
-            dataList.append([])
-
-    for j in range(len(l)):
-        dataList[j][i] = l[j] #i = zeile, j = kanal
+        for j in range(len(l)):
+            dataList[item,j] = l[j]
+            #dataList[item] = l[j] #i = zeile, j = kanal
+    item = item+1
     #0 Zeit
     #1 Diag
     #2 Gerätenummer
     #ab 3 Messkanäle
+set=True
 client.close()
+print(len(dataList))
+max=0
+x=[]
+y3=[]
+y4=[]
+y5=[]
+y6=[]
+y7=[]
+y8=[]
+for i in range(len(dataList)):
+    if (i,0) in dataList.keys():
+ #   for i in dataList:
+        x.append(dataList[i,0])
+        y3.append(dataList[i, 3])
+        y4.append(dataList[i, 4])
+        y5.append(dataList[i, 5])
+        y6.append(dataList[i, 6])
+        y7.append(dataList[i, 7])
+        y8.append(dataList[i, 8])
+    #max=i
+#data.append(go.Scatter(x=dataList[i,0],
+#                        y=dataList[i,3]),
+#                        name=("channel"+str(i)),
+#                        text=dataList[i,i+3],
+#                        yaxis="y"+str(i))
 
-#data = go.Data([trace1, trace2, trace3, trace4, trace5])
-data = go.Data([])
-for i in range(len(dataList-3)):
-    data.append(go.Scatter(x=dataList[i][1],
-                           y=dataList[i][i+3]),
-                            name="channel"+i,
-                            text=dataList[i][i+3],
-                            yaxis="y+i")
+trace1 = go.Scatter(
+    x=x,
+    y=y3,
+    name="K1",
+    text=y3,
+    yaxis="y"+str(y3),
+)
+trace2 = go.Scatter(
+    x=x,
+    y=y4,
+    name="K2",
+    text=y4,
+    yaxis="y"+str(y4),
+)
+trace3 = go.Scatter(
+    x=x,
+    y=y5,
+    name="K3",
+    text=y5,
+    yaxis="y"+str(y5),
+)
+trace4 = go.Scatter(
+    x=x,
+    y=y6,
+    name="K4",
+    text=y6,
+    yaxis="y"+str(y6),
+)
+data = go.Data([trace1, trace2, trace3, trace4])
 
 # style all the traces
 for k in range(len(data)):
@@ -51,7 +100,7 @@ for k in range(len(data)):
 layout = {
   "annotations": [
     {
-      "x": "2013-06-01",
+      "x": "2018-01-01",
       "y": 0,
       "arrowcolor": "rgba(63, 81, 181, 0.2)",
       "arrowsize": 0.3,
@@ -63,7 +112,7 @@ layout = {
       "yref": "y"
     },
     {
-      "x": "2014-09-13",
+      "x": "2019-01-01",
       "y": 0,
       "arrowcolor": "rgba(76, 175, 80, 0.1)",
       "arrowsize": 0.3,
@@ -82,42 +131,18 @@ layout = {
     "t": 100,
     "b": 100
   },
-  "shapes": [
-    {
-      "fillcolor": "rgba(63, 81, 181, 0.2)",
-      "line": {"width": 0},
-      "type": "rect",
-      "x0": "2013-01-15",
-      "x1": "2013-10-17",
-      "xref": "x",
-      "y0": 0,
-      "y1": 0.95,
-      "yref": "paper"
-    },
-    {
-      "fillcolor": "rgba(76, 175, 80, 0.1)",
-      "line": {"width": 0},
-      "type": "rect",
-      "x0": "2013-10-22",
-      "x1": "2015-08-05",
-      "xref": "x",
-      "y0": 0,
-      "y1": 0.95,
-      "yref": "paper"
-    }
-  ],
   "xaxis": {
     "autorange": True,
-    "range": [dataList[0][0], dataList[0][len(dataList)]],
+    "range": [0, 1500],
     "rangeslider": {
       "autorange": True,
-      "range": [dataList[0][0], dataList[0][len(dataList)]]
+      "range": [0, 1500]
     },
     "type": "date"
   },
   "yaxis": {
     "anchor": "x",
-    "autorange": True,
+    "autorange": False,
     "domain": [0, 0.2],
     "linecolor": "#673ab7",
     "mirror": True,

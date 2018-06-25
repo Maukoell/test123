@@ -1,5 +1,7 @@
 # imports
 import csv
+from datetime import datetime
+
 from influxdb import InfluxDBClient
 #import mysql.connector
 #from mysql.connector import Error
@@ -7,6 +9,7 @@ from influxdb import InfluxDBClient
 #conn = sqlite3.connect('messdaten.db')
 #c = conn.cursor()
 # globale variablen um die Infozeilen, die fehlerhaften Zeilen und die Luecken zu dokumentieren
+f = "%Y-%m-%d %H:%M:%S"
 info = []
 error = []
 gap = []
@@ -80,21 +83,24 @@ def delfirst(row, wtr):
         #    print("Error")
         json.append (
             {
-                "measurement": "messwerte",
+                "measurement": "test",
                 "tags": {
-                    "GeraeteNummer" :row[1]
+                    "GeraeteNummer": row[1],
+
+
                 },
                 "time": zeit,
                 "fields": {
-                    "k1": row[7],
-                    "k2": row[8],
-                    "k3": row[9],
-                    "k4": row[10],
-                    "k5": row[11],
-                    "k6": row[12],
-                    "k7": row[13],
-                    "k8": row[14],
-                    "DIAG": row[15]
+                    "k1": int(row[7]),
+                    "k2": int(row[8]),
+                    "k3": int(row[9]),
+                    "k4": int(row[10]),
+                    "k5": int(row[11]),
+                    "k6": int(row[12]),
+                    "k7": int(row[13]),
+                    "k8": int(row[14]),
+                    "DIAG": int(row[15]),
+                    "Wochentag": (datetime.strptime(zeit, f).weekday())
                 }
             },
         )
@@ -121,7 +127,6 @@ def main(reader):
     client.close()
     #print(json)
     write()
-
 
 # erkennung der Zeitabstaende
 def findTime(reader):
@@ -167,7 +172,7 @@ def firstisdigit(row):
 # ueberprueft ob zwischen der aktuellen und der vorherigen Zeile zu großer zeitlicher unterschied war
 def findgap(row, prev, timegap):
     if timegap != None:
-        if int(row[6]) != (int(prev[6]) + timegap) and int(prev[6]) != 59:
+        if len(row) > 0 and int(row[6]) != (int(prev[6]) + timegap) and int(prev[6]) != 59:
             date1 = ("2018-" + prev[2].replace(" ", "0") + "-" + prev[3].replace(" ", "0") + " " + prev[4].replace(" ",
                                                                                                                    "0") + ":" +
                      prev[5].replace(" ", "0") + ":" + prev[6].replace(" ", "0"))
