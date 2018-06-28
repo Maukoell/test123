@@ -3,6 +3,13 @@ import csv
 from datetime import datetime
 
 from influxdb import InfluxDBClient
+
+import os
+import glob
+
+from tkinter import *
+import tkinter
+from tkinter.filedialog import *
 #import mysql.connector
 #from mysql.connector import Error
 #import sqlite3
@@ -13,12 +20,12 @@ f = "%Y-%m-%d %H:%M:%S"
 info = []
 error = []
 gap = []
+files = []
 #JSON Body für die übertragung in die Datenbank
-json=[]
+json = []
 
 #Verbimndung zur Datenbank
-client = InfluxDBClient(host='localhost', port=8086)
-client.switch_database('messdaten')
+
 
 #try:
 #    con = mysql.connector.connect(host='localhost', database='messdaten', user='root', password='')
@@ -26,11 +33,20 @@ client.switch_database('messdaten')
 #except Error as e:
 #    print(e)
 
-# oeffnen des Files
+
+
+
+def connectToDatabase():
+    global client
+    client = InfluxDBClient(host='localhost', port=8086)
+    client.switch_database('messdaten')
+
+
 def imp(address):
+    # oeffnen des Files
     global name
     name = address
-    file = open((address), "r")
+    file = open(address, "r")
     reader = csv.reader(file, delimiter=";")
     return reader
 
@@ -81,6 +97,28 @@ def delfirst(row, wtr):
         #    c.execute('INSERT INTO daten VALUES (?,?,?,?,?,?,?,?,?,?,?)',(row[1],zeit,row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15]))
         #except sqlite3.IntegrityError:
         #    print("Error")
+        if chVar1.get() == 1:
+            connectToDatabase()
+            json.append(
+                {
+                    "measurement": "messwerte",
+                    "tags": {
+                        "GeraeteNummer":row[1]
+                    },
+                    "time": zeit,
+                    "fields": {
+                        "k1": row[7],
+                        "k2": row[8],
+                        "k3": row[9],
+                        "k4": row[10],
+                        "k5": row[11],
+                        "k6": row[12],
+                        "k7": row[13],
+                        "k8": row[14],
+                        "DIAG": row[15]
+                    }
+                },
+            )
         json.append (
             {
                 "measurement": "test",
@@ -123,9 +161,12 @@ def main(reader):
     #conn.commit()
     #c.close()
     #conn.close()
-    client.write_points(json)
-    client.close()
+
+    if chVar1.get() == 1:
+        client.write_points(json)
+        client.close()
     #print(json)
+    print(chVar1.get())
     write()
 
 # erkennung der Zeitabstaende
@@ -226,8 +267,6 @@ def findFormat(reader):
 # if __name__ == '__main__':
 #    main(imp("F0800305"))
 
-import tkinter
-from tkinter.filedialog import askopenfilename
 
 
 # Beenden des main GUI Fensters
@@ -238,20 +277,35 @@ def ende():
 # Beenden aller GUI Fenster
 def endAll():
     popup.destroy()
-    mainFrame.destroy()
+
 
 
 # öffnen des FileChoosers
 def openFileChooser():
-    filename = askopenfilename()
-    tx1.delete(0, len(tx1.get()))
-    tx1.insert(0, filename)
+    if chVar2.get() == 1:
+        global directory
+        directory = askdirectory()
+        tx1.delete(0, len(tx1.get()))
+        tx1.insert(0, directory)
+    else:
+        filename = askopenfilename()
+        tx1.delete(0, len(tx1.get()))
+        tx1.insert(0, filename)
 
 
 # Vorgang mit Datei durchführen
 def startProgramm():
-    main(imp(tx1.get()))
-    finished()
+    if chVar2.get() == 1:
+        extension = 'csv'
+        os.chdir(directory)
+        result = [i for i in glob.glob('*.{}'.format(extension))]
+
+        for i in range(len(result)):
+            main(imp(result[i]))
+        finished()
+    else:
+        main(imp(tx1.get()))
+        finished()
 
 
 # Popup nach Fertigstellung
@@ -284,6 +338,15 @@ lb1.pack(fill="x", expand=1, padx=10, pady=10)
 tx1 = tkinter.Entry(fr1, width=30)
 tx1.pack(fill="x", expand=1, padx=10, pady=10)
 
+fr2 = tkinter.Frame(fr0)
+fr2.pack(expand=1, fill="x")
+chVar1 = IntVar()
+chBx1 = tkinter.Checkbutton(fr2, text="Datenbankverknüpfung", variable=chVar1)
+chBx1.grid(padx=15, row=0, sticky="E")
+chVar2 = IntVar()
+chBx2 = tkinter.Checkbutton(fr2, text="Ordner?", variable=chVar2)
+chBx2.grid(padx=15, row=0, column=1, sticky="W")
+
 # Button Datei auswählen, Bestätigen, Abbrechen
 fr3 = tkinter.Frame(fr0)
 fr3.pack(expand=1, fill="x")
@@ -293,5 +356,6 @@ bt2 = tkinter.Button(fr3, text="Bestätigen", width=15, command=startProgramm)
 bt2.pack(padx=20, pady=10, side="left")
 bt3 = tkinter.Button(fr3, text="Abbrechen", width=15, command=ende)
 bt3.pack(padx=20, pady=10, side="left")
+
 
 mainFrame.mainloop()
