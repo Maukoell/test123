@@ -98,29 +98,29 @@ def delfirst(row, wtr):
         #    print("Error")
         if chVar1.get() == 1:
             connectToDatabase()
-        json.append (
-            {
-                "measurement": "test",
-                "tags": {
-                    "GeraeteNummer": row[1],
+            json.append (
+                {
+                    "measurement": "test",
+                    "tags": {
+                        "GeraeteNummer": row[1],
 
 
+                    },
+                    "time": zeit,
+                    "fields": {
+                        "k1": int(row[7]),
+                        "k2": int(row[8]),
+                        "k3": int(row[9]),
+                        "k4": int(row[10]),
+                        "k5": int(row[11]),
+                        "k6": int(row[12]),
+                        "k7": int(row[13]),
+                        "k8": int(row[14]),
+                        "DIAG": int(row[15]),
+                        "Wochentag": (datetime.strptime(zeit, f).weekday())
+                    }
                 },
-                "time": zeit,
-                "fields": {
-                    "k1": int(row[7]),
-                    "k2": int(row[8]),
-                    "k3": int(row[9]),
-                    "k4": int(row[10]),
-                    "k5": int(row[11]),
-                    "k6": int(row[12]),
-                    "k7": int(row[13]),
-                    "k8": int(row[14]),
-                    "DIAG": int(row[15]),
-                    "Wochentag": (datetime.strptime(zeit, f).weekday())
-                }
-            },
-        )
+            )
 
 
 #kompletter Aufruf, um ein file zu bereinigen
