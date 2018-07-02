@@ -1,9 +1,10 @@
 # imports
 import csv
 from datetime import datetime
-
-from influxdb import InfluxDBClient
-
+try:
+    from influxdb import InfluxDBClient
+except ImportError:
+    pass
 import os
 import glob
 
