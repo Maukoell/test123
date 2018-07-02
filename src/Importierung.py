@@ -20,11 +20,9 @@ f = "%Y-%m-%d %H:%M:%S"
 info = []
 error = []
 gap = []
-files = []
 #JSON Body für die übertragung in die Datenbank
 json = []
 
-#Verbimndung zur Datenbank
 
 
 #try:
@@ -99,26 +97,6 @@ def delfirst(row, wtr):
         #    print("Error")
         if chVar1.get() == 1:
             connectToDatabase()
-            json.append(
-                {
-                    "measurement": "messwerte",
-                    "tags": {
-                        "GeraeteNummer":row[1]
-                    },
-                    "time": zeit,
-                    "fields": {
-                        "k1": row[7],
-                        "k2": row[8],
-                        "k3": row[9],
-                        "k4": row[10],
-                        "k5": row[11],
-                        "k6": row[12],
-                        "k7": row[13],
-                        "k8": row[14],
-                        "DIAG": row[15]
-                    }
-                },
-            )
         json.append (
             {
                 "measurement": "test",
@@ -164,10 +142,11 @@ def main(reader):
 
     if chVar1.get() == 1:
         client.write_points(json)
+        json.clear()
         client.close()
     #print(json)
-    print(chVar1.get())
     write()
+
 
 # erkennung der Zeitabstaende
 def findTime(reader):
@@ -178,7 +157,7 @@ def findTime(reader):
     for row, i in zip(reader, range(0, 9)):
         if prev is not None:
             if rowNumber == 1:
-                if row is not None and row[0][0] != "#" and prev[0][0] != "#":
+                if row is not None and len(row)>0 and row[0][0] != "#" and len(prev)>0 and prev[0][0] != "#":
                     time = int(row[6]) - int(prev[6])
                 else:
                     next(reader)

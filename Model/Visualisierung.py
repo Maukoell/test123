@@ -10,7 +10,7 @@ client = InfluxDBClient(host='localhost', port=8086)
 client.switch_database('messdaten')
 traceList = []
 dataList = {}
-rs =list(client.query("select mean(*) from test where Wochentag=3 and GeraeteNummer=' 80' Group by time(15m)").get_points())
+rs =list(client.query("select mean(*) from test Group by time(1h)").get_points())
 #Wochentage
 #SELECT MEAN(revenue) FROM revenue_count WHERE time > now() - 7d GROUP BY time(1d)
 set = False
