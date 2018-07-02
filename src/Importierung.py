@@ -84,7 +84,7 @@ def delfirst(row, wtr):
         zeit = ("2018-" + row[2].replace(" ", "0") + "-" + row[3].replace(" ", "0") + " " + row[4].replace(" ",
                                                                                                            "0") + ":" +
                 row[5].replace(" ", "0") + ":" + row[6].replace(" ", "0"))
-        wtr.writerow([row[1:]])
+        wtr.writerow(row[1:])
         #query1= "INSERT IGNORE INTO messgeraet (Geraetenummer, formatierung) VALUES (%s,%s)"
         #args1=(row[1],0)
         #cursor.execute(query1, args1)
