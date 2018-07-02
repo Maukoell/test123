@@ -45,7 +45,7 @@ def imp(address):
     # oeffnen des Files
     global name
     name = address
-    file = open(address, "r")
+    file = open(address, "r",newline='')
     reader = csv.reader(file, delimiter=";")
     return reader
 
@@ -61,7 +61,7 @@ def infos(row, prev):
 
 # schreibt alle Infozeilen, die fehlerhaften Zeilen und die Luecken in ein Info-File
 def write():
-    with open(str(name) + "_info.csv", "w") as infos:
+    with open(str(name) + "_info.csv", "w",newline='') as infos:
         wtr = csv.writer(infos, delimiter=";")
         wtr.writerow(["INFOS"])
         for row in info:
@@ -126,7 +126,7 @@ def delfirst(row, wtr):
 #kompletter Aufruf, um ein file zu bereinigen
 def main(reader):
     prev = None
-    with open(str(name) + "_result.csv", "w") as result:
+    with open(str(name) + "_result.csv", "w",newline='') as result:
         wtr1 = csv.writer(result, delimiter=";")
         format = findFormat(reader)
         timegap = findTime(reader)
