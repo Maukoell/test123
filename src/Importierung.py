@@ -52,11 +52,9 @@ def imp(address):
 
 # ueberpruefung ob die aktuelle Zeile eine Infozeile ist und wenn ja das abspeichern dieser mit vorhergehenden Uhrzeit
 def infos(row, prev):
-    if len(row) > 0 and row[0][0] == "#" and prev is not None and firstisdigit(prev):
-        date = ("2018-" + prev[2].replace(" ", "0") + "-" + prev[3].replace(" ", "0") + " " + prev[4].replace(" ",
-                                                                                                              "0") + ":" +
-                prev[5].replace(" ", "0") + ":" + prev[6].replace(" ", "0"))
-        info.append(date + "\n" + row[0] + "\n")
+    if len(row) > 0 and row[0][0] == "#":
+        timestamp = ("2018-" + prev[2].replace(" ", "0") + "-" + prev[3].replace(" ", "0") + " " + prev[4].replace(" ","0") + ":" + prev[5].replace(" ", "0") + ":" + prev[6].replace(" ", "0"))
+        info.append(timestamp + "\n" + row[0] + "\n")
 
 
 # schreibt alle Infozeilen, die fehlerhaften Zeilen und die Luecken in ein Info-File
@@ -81,7 +79,7 @@ def write():
 # entfernen der ersten Zahl und abspeichern der Zeile
 def delfirst(row, wtr):
     if firstisdigit(row):
-        zeit = ("2018-" + row[2].replace(" ", "0") + "-" + row[3].replace(" ", "0") + " " + row[4].replace(" ",
+        timestamp = ("2018-" + row[2].replace(" ", "0") + "-" + row[3].replace(" ", "0") + " " + row[4].replace(" ",
                                                                                                            "0") + ":" +
                 row[5].replace(" ", "0") + ":" + row[6].replace(" ", "0"))
         wtr.writerow(row[1:])
@@ -106,7 +104,7 @@ def delfirst(row, wtr):
 
 
                     },
-                    "time": zeit,
+                    "time": timestamp,
                     "fields": {
                         "k1": int(row[7]),
                         "k2": int(row[8]),
@@ -128,15 +126,18 @@ def main(reader):
     prev = None
     with open(str(name) + "_result.csv", "w",newline='') as result:
         wtr1 = csv.writer(result, delimiter=";")
-        format = findFormat(reader)
-        timegap = findTime(reader)
+        formatreader=reader
+        timereader=reader
+        format = findFormat(formatreader)
+        timegap = findTime(timereader)
         for row in reader:
             checkFormat(row, prev, format)
-            if (len(row) > 0 and row[0][0] != "#" and prev is not None and firstisdigit(prev)):
+            if (len(row) > 0 and row[0][0] != "#" and prev is not None):
                 findgap(row, prev, timegap)
             infos(row, prev)
             delfirst(row, wtr1)
-            prev = row
+            if(firstisdigit(row)):
+                prev = row
     #conn.commit()
     #c.close()
     #conn.close()

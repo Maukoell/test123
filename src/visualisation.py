@@ -6,7 +6,7 @@ client = InfluxDBClient(host='localhost', port=8086)
 client.switch_database('messdaten')
 
 lis = []
-rs =list(client.query("SELECT * from messwerte where wochentag='3' and GeraeteNummer='80 'group by time(15m)").get_points())
+rs =list(client.query("SELECT mean(*) from messwerte where wochentag='3' and GeraeteNummer='80 'group by time(1m)").get_points())
 for i in rs:
     l=list(i.values())
     lis.append(l[3])
