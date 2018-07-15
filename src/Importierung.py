@@ -115,7 +115,7 @@ def delfirst(row, wtr):
                         "k7": int(row[13]),
                         "k8": int(row[14]),
                         "DIAG": int(row[15]),
-                        "Wochentag": (datetime.strptime(zeit, f).weekday())
+                        "Wochentag": (datetime.strptime(timestamp, f).weekday())
                     }
                 },
             )
@@ -128,12 +128,14 @@ def main(reader):
         wtr1 = csv.writer(result, delimiter=";")
         formatreader=reader
         timereader=reader
-        format = findFormat(formatreader)
+        #format = findFormat(formatreader)
+        format=16
         timegap = findTime(timereader)
+        print(timegap)
         for row in reader:
             checkFormat(row, prev, format)
-            if (len(row) > 0 and row[0][0] != "#" and prev is not None):
-                findgap(row, prev, timegap)
+            if (firstisdigit(row) and prev is not None):
+                findgap(row, prev, timegap, wtr1,  format)
             infos(row, prev)
             delfirst(row, wtr1)
             if(firstisdigit(row)):
@@ -186,24 +188,40 @@ def findTime(reader):
 
 # ueberprufung ob das erste Element der Zeile eine Zahl ist
 def firstisdigit(row):
-    if len(row) > 0 and row[0][1].isdigit() and row[0][2].isdigit() and row[0][0] == " ":
+    if len(row) > 0 and row[0][1] != None and row[0][1].isdigit() and row[0][2] != None and row[0][2].isdigit() and row[0][0] == " ":
         return True
     return False
 
 
 # ueberprueft ob zwischen der aktuellen und der vorherigen Zeile zu großer zeitlicher unterschied war
-def findgap(row, prev, timegap):
+def findgap(row, prev, timegap, wtr, format):
     if timegap != None:
         if len(row) > 0 and int(row[6]) != (int(prev[6]) + timegap) and int(prev[6]) != 59:
-            date1 = ("2018-" + prev[2].replace(" ", "0") + "-" + prev[3].replace(" ", "0") + " " + prev[4].replace(" ",
+            von = datetime.strptime(("2018-" + prev[2].replace(" ", "0") + "-" + prev[3].replace(" ", "0") + " " + prev[4].replace(" ",
                                                                                                                    "0") + ":" +
-                     prev[5].replace(" ", "0") + ":" + prev[6].replace(" ", "0"))
-            date2 = ("2018-" + row[2].replace(" ", "0") + "-" + row[3].replace(" ", "0") + " " + row[4].replace(" ",
+                     prev[5].replace(" ", "0") + ":" + prev[6].replace(" ", "0")),f)
+            bis = datetime.strptime(("2018-" + row[2].replace(" ", "0") + "-" + row[3].replace(" ", "0") + " " + row[4].replace(" ",
                                                                                                                 "0") + ":" +
-                     row[5].replace(" ", "0") + ":" + row[6].replace(" ", "0"))
-            gap.append("Lücke von: " + date1 + " bis: " + date2)
-        prev = row
+                     row[5].replace(" ", "0") + ":" + row[6].replace(" ", "0")),f)
+            gap.append(str(von) + " " + str(bis))
+            #Ausfälle nur minutenlang, nicht über stunden schlägt fehl nach 59:59
+            steps=int((bis-von).total_seconds())
+            #steigung
+            k=[]
+            messk=[]
+            for i in range(7, format):
+                k.append((int(row[i])-int(prev[i]))/steps)
+            for i in range(0, steps):
+                seconds=(int(prev[6])+i)%60
+                minutes=(int(prev[5])+int((int(prev[6])+i)/60))%60
+                hours=int(prev[4])+int(int(prev[5])+int((int(prev[6])+i)/60)/60)
+                for j in range(0, len(k)):
+                    messk.append(int((k[j] * i) + int(prev[j+7])))
+                wtr.writerow(prev[1:4] + [hours] + [minutes] + [seconds]+ messk)
+                messk.clear()
+                #wtr.writerow(prev[1:4]+[hours]+[minutes]+[seconds]+prev[7:]) vorheriger wert
 
+        prev = row
 
 # ueberpruefen ob das format der Zeile mit dem erkannten format uebereinstimmt
 def checkFormat(row, prev, format):
