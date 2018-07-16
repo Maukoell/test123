@@ -24,16 +24,11 @@ gap = []
 #JSON Body für die übertragung in die Datenbank
 json = []
 
-
-
 #try:
 #    con = mysql.connector.connect(host='localhost', database='messdaten', user='root', password='')
 #    cursor = con.cursor()
 #except Error as e:
 #    print(e)
-
-
-
 
 def connectToDatabase():
     global client
@@ -96,29 +91,165 @@ def delfirst(row, wtr):
         #    print("Error")
         if chVar1.get() == 1:
             connectToDatabase()
-            json.append (
-                {
-                    "measurement": "test",
-                    "tags": {
-                        "GeraeteNummer": row[1],
+            #json.append (
+                #{
+                 #   "measurement": "test",
+                  #  "tags": {
+                   #     "GeraeteNummer": row[1],
 
 
-                    },
-                    "time": timestamp,
-                    "fields": {
-                        "k1": int(row[7]),
-                        "k2": int(row[8]),
-                        "k3": int(row[9]),
-                        "k4": int(row[10]),
-                        "k5": int(row[11]),
-                        "k6": int(row[12]),
-                        "k7": int(row[13]),
-                        "k8": int(row[14]),
-                        "DIAG": int(row[15]),
-                        "Wochentag": (datetime.strptime(timestamp, f).weekday())
-                    }
-                },
-            )
+                    #},
+                    #"time": timestamp,
+                    #"fields": {
+                    #    "k1": int(row[7]),
+                    #    "k2": int(row[8]),
+                    #    "k3": int(row[9]),
+                    #   "k4": int(row[10]),
+                    #    "k5": int(row[11]),
+                    #    "k6": int(row[12]),
+                  #      "k7": int(row[13]),
+                 #       "k8": int(row[14]),
+                #        "DIAG": int(row[15]),
+               #         "Wochentag": (datetime.strptime(timestamp, f).weekday())
+              #      }
+             #   },
+            #)
+
+            if format==9:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "DIAG": int(row[8]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
+            elif format==10:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "k2": int(row[8]),
+                               "DIAG": int(row[9]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
+            elif format==11:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "k2": int(row[8]),
+                               "k3": int(row[9]),
+                               "DIAG": int(row[10]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
+            elif format==12:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "k2": int(row[8]),
+                               "k3": int(row[9]),
+                               "k4": int(row[10]),
+                               "DIAG": int(row[11]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
+
+            elif format==13:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "k2": int(row[8]),
+                               "k3": int(row[9]),
+                               "k4": int(row[10]),
+                               "k5": int(row[11]),
+                               "DIAG": int(row[12]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
+            elif format==14:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "k2": int(row[8]),
+                               "k3": int(row[9]),
+                               "k4": int(row[10]),
+                               "k5": int(row[11]),
+                               "k6": int(row[12]),
+                               "DIAG": int(row[13]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
+
+            elif format==15:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "k2": int(row[8]),
+                               "k3": int(row[9]),
+                               "k4": int(row[10]),
+                               "k5": int(row[11]),
+                               "k6": int(row[12]),
+                               "k7": int(row[13]),
+                               "DIAG": int(row[14]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
+
+            elif format==16:
+                json.append({
+                           "measurement": "test",
+                           "tags": {
+                               "GeraeteNummer": row[1],
+                           },
+                           "time": timestamp,
+                           "fields": {
+                               "k1": int(row[7]),
+                               "k2": int(row[8]),
+                               "k3": int(row[9]),
+                               "k4": int(row[10]),
+                               "k5": int(row[11]),
+                               "k6": int(row[12]),
+                               "k7": int(row[13]),
+                               "k8": int(row[14]),
+                               "DIAG": int(row[15]),
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                           }
+                       },)
 
 
 #kompletter Aufruf, um ein file zu bereinigen

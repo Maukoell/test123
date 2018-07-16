@@ -4,12 +4,12 @@ from influxdb import InfluxDBClient
 # Verbindung zur Datenbank
 client = InfluxDBClient(host='localhost', port=8086)
 client.switch_database('messdaten')
-
-lis = []
-rs =list(client.query("SELECT mean(*) from messwerte where wochentag='3' and GeraeteNummer='80 'group by time(1m)").get_points())
-for i in rs:
+#Montag
+monlis = []
+monrs =list(client.query("SELECT mean(*) from messwerte where wochentag='0' and GeraeteNummer='80 'group by time(1m)").get_points())
+for i in monrs:
     l=list(i.values())
-    lis.append(l[3])
+    monlis.append(l[3])
     #for j in range(len(l)):
      #   print(l[j])
     #0 Zeit
@@ -17,5 +17,3 @@ for i in rs:
     #2 Gerätenummer
     #ab 3 Messkanäle
 client.close()
-for i in range(len(lis)):
-    print(lis[i])
