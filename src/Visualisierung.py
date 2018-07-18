@@ -1,7 +1,7 @@
 import plotly.offline as py
 import plotly.graph_objs as go
 from influxdb import InfluxDBClient
-import datetime
+
 
 
 
@@ -10,16 +10,16 @@ client = InfluxDBClient(host='localhost', port=8086)
 client.switch_database('messdaten')
 traceList = []
 dataList = {}
-rs =list(client.query("select mean(*) from test Group by time(15m)").get_points())
+rs =list(client.query("select mean(*) from test Group by time(1h)").get_points())
+#Wochentage
+#SELECT MEAN(revenue) FROM revenue_count WHERE time > now() - 7d GROUP BY time(1d)
 set = False
 item=0
 for i in rs:
     l = list(i.values())
     if not set:
         for j in range(len(l)):
-            for k in range(len(l)):
-                if(datetime(l[j]).seconds==datetime(l[k]).minute and datetime(l[j]).minute==datetime(l[k]).seconds and datetime(l[j]).hour==datetime(l[k]).hour):
-                    dataList[item,j] =l[j]
+            dataList[item,j] = l[j]
             #dataList[item] = l[j] #i = zeile, j = kanal
     item = item+1
     #0 Zeit

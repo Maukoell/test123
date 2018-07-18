@@ -33,7 +33,7 @@ json = []
 def connectToDatabase():
     global client
     client = InfluxDBClient(host='localhost', port=8086)
-    client.switch_database('messdaten')
+    client.switch_database('test')
 
 
 def imp(address):
@@ -72,7 +72,7 @@ def write():
 
 
 # entfernen der ersten Zahl und abspeichern der Zeile
-def delfirst(row, wtr):
+def delfirst(row, wtr, format):
     if firstisdigit(row):
         timestamp = ("2018-" + row[2].replace(" ", "0") + "-" + row[3].replace(" ", "0") + " " + row[4].replace(" ",
                                                                                                            "0") + ":" +
@@ -89,8 +89,6 @@ def delfirst(row, wtr):
         #    c.execute('INSERT INTO daten VALUES (?,?,?,?,?,?,?,?,?,?,?)',(row[1],zeit,row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15]))
         #except sqlite3.IntegrityError:
         #    print("Error")
-        if chVar1.get() == 1:
-            connectToDatabase()
             #json.append (
                 #{
                  #   "measurement": "test",
@@ -114,18 +112,18 @@ def delfirst(row, wtr):
               #      }
              #   },
             #)
-
+        if chVar1.get() == 1:
             if format==9:
                 json.append({
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
                                "k1": int(row[7]),
-                               "DIAG": int(row[8]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                               "DIAG": int(row[8])
                            }
                        },)
             elif format==10:
@@ -133,13 +131,13 @@ def delfirst(row, wtr):
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
                                "k1": int(row[7]),
                                "k2": int(row[8]),
-                               "DIAG": int(row[9]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                               "DIAG": int(row[9])
                            }
                        },)
             elif format==11:
@@ -147,14 +145,14 @@ def delfirst(row, wtr):
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
                                "k1": int(row[7]),
                                "k2": int(row[8]),
                                "k3": int(row[9]),
-                               "DIAG": int(row[10]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                               "DIAG": int(row[10])
                            }
                        },)
             elif format==12:
@@ -162,6 +160,7 @@ def delfirst(row, wtr):
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
@@ -169,8 +168,7 @@ def delfirst(row, wtr):
                                "k2": int(row[8]),
                                "k3": int(row[9]),
                                "k4": int(row[10]),
-                               "DIAG": int(row[11]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                               "DIAG": int(row[11])
                            }
                        },)
 
@@ -179,6 +177,7 @@ def delfirst(row, wtr):
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
@@ -187,8 +186,7 @@ def delfirst(row, wtr):
                                "k3": int(row[9]),
                                "k4": int(row[10]),
                                "k5": int(row[11]),
-                               "DIAG": int(row[12]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                               "DIAG": int(row[12])
                            }
                        },)
             elif format==14:
@@ -196,6 +194,7 @@ def delfirst(row, wtr):
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
@@ -205,8 +204,7 @@ def delfirst(row, wtr):
                                "k4": int(row[10]),
                                "k5": int(row[11]),
                                "k6": int(row[12]),
-                               "DIAG": int(row[13]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
+                               "DIAG": int(row[13])
                            }
                        },)
 
@@ -215,6 +213,7 @@ def delfirst(row, wtr):
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
@@ -226,7 +225,6 @@ def delfirst(row, wtr):
                                "k6": int(row[12]),
                                "k7": int(row[13]),
                                "DIAG": int(row[14]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
                            }
                        },)
 
@@ -235,6 +233,7 @@ def delfirst(row, wtr):
                            "measurement": "test",
                            "tags": {
                                "GeraeteNummer": row[1],
+                               "Wochentag": (datetime.strptime(timestamp, f).weekday()),
                            },
                            "time": timestamp,
                            "fields": {
@@ -247,13 +246,14 @@ def delfirst(row, wtr):
                                "k7": int(row[13]),
                                "k8": int(row[14]),
                                "DIAG": int(row[15]),
-                               "Wochentag": (datetime.strptime(timestamp, f).weekday())
                            }
                        },)
 
 
 #kompletter Aufruf, um ein file zu bereinigen
 def main(reader):
+    if chVar1.get() == 1:
+        connectToDatabase()
     prev = None
     with open(str(name) + "_result.csv", "w",newline='') as result:
         wtr1 = csv.writer(result, delimiter=";")
@@ -268,7 +268,7 @@ def main(reader):
             if (firstisdigit(row) and prev is not None):
                 findgap(row, prev, timegap, wtr1,  format)
             infos(row, prev)
-            delfirst(row, wtr1)
+            delfirst(row, wtr1, format)
             if(firstisdigit(row)):
                 prev = row
     #conn.commit()
