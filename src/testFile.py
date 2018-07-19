@@ -441,9 +441,23 @@ def startProgramm():
         finished()
     else:
         if "info" or "result" in tx1.get():
+            print("test")
+            #errorPopup()
+        else:
             main(imp(tx1.get()))
         finished()
 
+
+def errorPopup():
+    global popup1
+    popup1 = tkinter.Tk()
+    popup1.wm_title("Fehler")
+    frame1 = tkinter.Frame(popup1)
+    frame1.pack()
+    label = tkinter.Label(frame1, text="Die angegebene Datei kann nicht verarbeitet werden")
+    label.pack(padx=10, pady=15);
+    button1 = tkinter.Button(frame1, text="Ok", command=endAll)
+    popup1.mainloop()
 
 # Popup nach Fertigstellung
 def finished():
