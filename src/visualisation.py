@@ -6,7 +6,7 @@ f = "%Y-%m-%dT%H:%M:%SZ"
 client = InfluxDBClient(host='localhost', port=8086)
 client.switch_database('test')
 lis=[]
-for weekday in range(0, 6):
+for weekday in range(0, 7):
     print("Wochentag: ", weekday)
     rs =list(client.query("SELECT mean(*) from test WHERE Wochentag='"+str(weekday)+"'group by Wochentag, time(1h)").get_points())
     for i in range(0, len(rs)-1):

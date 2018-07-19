@@ -7,7 +7,7 @@ from influxdb import InfluxDBClient
 
 # Verbindung zur Datenbank
 client = InfluxDBClient(host='localhost', port=8086)
-client.switch_database('messdaten')
+client.switch_database('test')
 traceList = []
 dataList = {}
 rs =list(client.query("select mean(*) from test Group by time(1h)").get_points())
@@ -133,20 +133,17 @@ layout = {
   },
   "xaxis": {
     "autorange": True,
-    "range": [0, 1500],
     "rangeslider": {
       "autorange": True,
-      "range": [0, 1500]
     },
     "type": "date"
   },
   "yaxis": {
     "anchor": "x",
-    "autorange": False,
+    "autorange": True,
     "domain": [0, 0.2],
     "linecolor": "#673ab7",
     "mirror": True,
-    "range": [0, 1500],
     "showline": True,
     "side": "right",
     "tickfont": {"color": "#673ab7"},

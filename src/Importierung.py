@@ -1,6 +1,7 @@
 # imports
 import csv
 from datetime import datetime
+import subprocess
 try:
     from influxdb import InfluxDBClient
 except ImportError:
@@ -408,7 +409,11 @@ def ende():
 def endAll():
     popup.destroy()
 
-
+def openFolder():
+    if chVar2.get() == 1:
+        os.startfile(directory)
+    else:
+        os.startfile(filename)
 
 # öffnen des FileChoosers
 def openFileChooser():
@@ -418,6 +423,7 @@ def openFileChooser():
         tx1.delete(0, len(tx1.get()))
         tx1.insert(0, directory)
     else:
+        global filename
         filename = askopenfilename()
         tx1.delete(0, len(tx1.get()))
         tx1.insert(0, filename)
@@ -448,7 +454,13 @@ def finished():
     label = tkinter.Label(frame1, text="Der Vorgang wurde durchgeführt.")
     label.pack(padx=10, pady=15);
     button1 = tkinter.Button(frame1, text="Ok", command=endAll)
-    button1.pack(ipadx=50, padx=5, pady=5, side="right")
+    button1.pack(ipadx=50, padx=5, pady=5, side="left")
+    if chVar2.get() == 1:
+        button2 = tkinter.Button(frame1, text="Ordner öffnen", command=openFolder)
+        button2.pack(padx=5, pady=5, side="left")
+    else:
+        button2 = tkinter.Button(frame1, text="Datei öffnen", command=openFolder)
+        button2.pack(padx=5, pady=5, side="left")
     popup.mainloop()
 
 
